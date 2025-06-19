@@ -1,11 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 
+// Serve os arquivos do React (pasta build)
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Dados dos produtos
 const produtos = [
     { nome: 'iPhone 16 Pro Max Titânio', descricao: 'Concebido para a inteligência da Apple, com um fantástico design em titânio.', preco: 8999.99, imagem: 'https://carrefourbr.vtexassets.com/arquivos/ids/182538541/image-0.jpg?v=638724823034400000',categoria: 'iphone' },
     { nome: 'iPhone 16 Pro Max Rose', descricao: 'Concebido para a inteligência da Apple, com um fantástico design em titânio.', preco: 8999.99, imagem: 'https://carrefourbr.vtexassets.com/arquivos/ids/182538253/image-0.jpg?v=638724822505400000',categoria: 'iphone' },
@@ -18,10 +23,17 @@ const produtos = [
     { nome: 'Ipad Pro De 13 Polegadas', descricao: 'Wi-fi 1tb Com Vidro Convencional - Prateado, O Ipad Fica Mais Produtivo, Intuitivo E Versáti', preco: 2999.99, imagem: 'https://carrefourbr.vtexassets.com/arquivos/ids/178691873/ipad-pro-de-13-polegadas-wi-fi-1tb-com-vidro-convencional-prateado.jpg?v=638668506298570000',categoria: 'ipad' }
 ];
 
+// Rota da API
 app.get('/produtos', (req, res) => {
     res.json(produtos);
 });
 
+// Redirecionar qualquer rota que não seja da API para o React
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+// Iniciar o servidor
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
